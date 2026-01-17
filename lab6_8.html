@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>task 8</title>
+</head>
+<body>
+    <ul id="dynamicList"></ul>
+
+    <script>
+        const itemCount = parseInt(prompt("Введите количество пунктов списка:", "3"));
+        
+        if (!isNaN(itemCount) && itemCount > 0) {
+            const ul = document.getElementById('dynamicList');
+            
+            for (let i = 0; i < itemCount; i++) {
+                const content = prompt(`Введите содержимое пункта ${i + 1}:`, `Тузик ${i + 1}`);
+                
+                const li = document.createElement('li');
+                li.textContent = content || `Тузик ${i + 1}`; 
+                ul.appendChild(li);
+            }
+        } else {
+            alert("Вы ввели некорректное число пунктов");
+        }
+    </script>
+</body>
+</html>
