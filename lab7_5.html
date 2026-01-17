@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Отслеживание изменений текста</title>
+    <meta charset="UTF-8">
+</head>
+<body>
+    <h1>Попробуйте изменить текст:</h1>
+    <input type="text" id="textField" placeholder="Введите текст здесь...">
+
+    <script>
+        const textField = document.getElementById('textField');
+        
+        function showChangeAlert() {
+            alert("Текст был изменен!!!");
+        }
+        
+        textField.addEventListener('input', showChangeAlert);
+    </script>
+</body>
+</html>
