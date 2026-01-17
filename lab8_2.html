@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>API Requests Demo</title>
+</head>
+<body>
+    <h1>Результаты запросов к API</h1>
+    <div id="output"></div>
+
+    <script>
+        function makeXhrRequests() {
+            const output = document.getElementById('output');
+            output.innerHTML += '<h2>1. Базовые XHR запросы</h2>';
+
+            const xhr1 = new XMLHttpRequest();
+            xhr1.open('GET', 'https://randomuser.me/api/', true);
+            xhr1.onload = function() {
+                if (xhr1.status === 200) {
+                    output.innerHTML += `<p>Random User: ${xhr1.responseText.substring(0, 50)}...</p>`;
+                    
+                    const xhr2 = new XMLHttpRequest();
+                    xhr2.open('GET', 'https://dog.ceo/api/breeds/image/random', true);
+                    xhr2.onload = function() {
+                        if (xhr2.status === 200) {
+                            output.innerHTML += `<p>Dog CEO: ${xhr2.responseText}</p>`;
+                            
+                            const xhr3 = new XMLHttpRequest();
+                            xhr3.open('GET', 'https://official-joke-api.appspot.com/random_joke', true);
+                            xhr3.onload = function() {
+                                if (xhr3.status === 200) {
+                                    output.innerHTML += `<p>Joke: ${xhr3.responseText}</p>`;
+                              
+                                    const xhr4 = new XMLHttpRequest();
+                                    xhr4.open('GET', 'https://ipinfo.io/json', true);
+                                    xhr4.onload = function() {
+                                        if (xhr4.status === 200) {
+                                            output.innerHTML += `<p>IP Info: ${xhr4.responseText.substring(0, 50)}...</p>`;
+                                            
+                                           
+                                            const xhr5 = new XMLHttpRequest();
+                                            xhr5.open('GET', 'http://numbersapi.com/random/math?json', true);
+                                            xhr5.onload = function() {
+                                                if (xhr5.status === 200) {
+                                                    output.innerHTML += `<p>Numbers: ${xhr5.responseText}</p>`;
+                                                }
+                                            };
+                                            xhr5.send();
+                                        }
+                                    };
+                                    xhr4.send();
+                                }
+                            };
+                            xhr3.send();
+                        }
+                    };
+                    xhr2.send();
+                }
+            };
+            xhr1.send();
+        }
+
+        function request(url, callback) {
+            const xhr = new XMLHttpRequest();
+            xhr.open('GET', url, true);
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    callback(null, xhr.responseText);
+                } else {
+                    callback(new Error(`Request failed with status ${xhr.status}`), null);
+                }
+            };
+            xhr.onerror = function() {
+                callback(new Error('Request failed'), null);
+            };
+            xhr.send();
+        }
+
+        function makeCallbackRequests() {
+            const output = document.getElementById('output');
+            output.innerHTML += '<h2>2. Запросы с коллбэками</h2>';
+
+            request('https://randomuser.me/api/', function(err, data) {
+                if (err) return console.error(err);
+                output.innerHTML += `<p>Random User: ${data.substring(0, 50)}...</p>`;
+                
+                request('https://dog.ceo/api/breeds/image/random', function(err, data) {
+                    if (err) return console.error(err);
+                    output.innerHTML += `<p>Dog CEO: ${data}</p>`;
+                    
+                    request('https://official-joke-api.appspot.com/random_joke', function(err, data) {
+                        if (err) return console.error(err);
+                        output.innerHTML += `<p>Joke: ${data}</p>`;
+                        
+                        request('https://ipinfo.io/json', function(err, data) {
+                            if (err) return console.error(err);
+                            output.innerHTML += `<p>IP Info: ${data.substring(0, 50)}...</p>`;
+                            
+                            request('http://numbersapi.com/random/math?json', function(err, data) {
+                                if (err) return console.error(err);
+                                output.innerHTML += `<p>Numbers: ${data}</p>`;
+                            });
+                        });
+                    });
+                });
+            });
+        }
+
+        function requestPromise(url) {
+            return new Promise(function(resolve, reject) {
+                request(url, function(err, data) {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve(data);
+                    }
+                });
+            });
+        }
+
+        function makePromiseRequests() {
+            const output = document.getElementById('output');
+            output.innerHTML += '<h2>3. Запросы с промисами</h2>';
+
+            requestPromise('https://randomuser.me/api/')
+                .then(data => {
+                    output.innerHTML += `<p>Random User: ${data.substring(0, 50)}...</p>`;
+                    return requestPromise('https://dog.ceo/api/breeds/image/random');
+                })
+                .then(data => {
+                    output.innerHTML += `<p>Dog CEO: ${data}</p>`;
+                    return requestPromise('https://official-joke-api.appspot.com/random_joke');
+                })
+                .then(data => {
+                    output.innerHTML += `<p>Joke: ${data}</p>`;
+                    return requestPromise('https://ipinfo.io/json');
+                })
+                .then(data => {
+                    output.innerHTML += `<p>IP Info: ${data.substring(0, 50)}...</p>`;
+                    return requestPromise('http://numbersapi.com/random/math?json');
+                })
+                .then(data => {
+                    output.innerHTML += `<p>Numbers: ${data}</p>`;
+                })
+                .catch(err => {
+                    console.error('Error:', err);
+                });
+        }
+
+        async function makeAsyncRequests() {
+            const output = document.getElementById('output');
+            output.innerHTML += '<h2>4. Async/await запросы</h2>';
+
+            try {
+                const userData = await requestPromise('https://randomuser.me/api/');
+                output.innerHTML += `<p>Random User: ${userData.substring(0, 50)}...</p>`;
+                
+                const dogData = await requestPromise('https://dog.ceo/api/breeds/image/random');
+                output.innerHTML += `<p>Dog CEO: ${dogData}</p>`;
+                
+                const jokeData = await requestPromise('https://official-joke-api.appspot.com/random_joke');
+                output.innerHTML += `<p>Joke: ${jokeData}</p>`;
+                
+                const ipData = await requestPromise('https://ipinfo.io/json');
+                output.innerHTML += `<p>IP Info: ${ipData.substring(0, 50)}...</p>`;
+                
+                const numberData = await requestPromise('http://numbersapi.com/random/math?json');
+                output.innerHTML += `<p>Numbers: ${numberData}</p>`;
+            } catch (err) {
+                console.error('Error:', err);
+            }
+        }
+
+        window.onload = function() {
+            makeXhrRequests();
+            setTimeout(makeCallbackRequests, 2000);
+            setTimeout(makePromiseRequests, 4000);
+            setTimeout(makeAsyncRequests, 6000);
+        };
+    </script>
+</body>
+</html>

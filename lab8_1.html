@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Факты о животных</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+        }
+        .step {
+            display: none;
+            margin-top: 30px;
+        }
+        .active {
+            display: block;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #animal-image {
+            max-width: 100%;
+            height: auto;
+            margin: 20px 0;
+            border-radius: 10px;
+            max-height: 400px;
+            border: 1px solid #ddd;
+        }
+        .animal-option {
+            padding: 15px;
+            margin: 10px;
+            background-color: #f1f1f1;
+            border-radius: 5px;
+            cursor: pointer;
+            display: inline-block;
+        }
+        .animal-option:hover {
+            background-color: #ddd;
+        }
+        .loading {
+            color: #666;
+            font-style: italic;
+        }
+        #new-fact-btn {
+            background-color: #2196F3;
+        }
+        #new-image-btn {
+            background-color: #9C27B0;
+        }
+        #new-image-btn:hover {
+            background-color: #7B1FA2;
+        }
+        #new-fact-btn:hover {
+            background-color: #0b7dda;
+        }
+        .buttons-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+    </style>
+</head>
+<body>
+    <div id="step1" class="step active">
+        <h1>Добро пожаловать, <span id="username">Гость</span>!</h1>
+        <p>Мы подобрали для вас случайное имя</p>
+        <button id="change-name">Мне не нравится это имя</button>
+        <button id="next-step1">Далее</button>
+    </div>
+
+    <div id="step2" class="step">
+        <h1>На чьей ты стороне?</h1>
+        <div class="animal-option" data-animal="cat">Коты</div>
+        <div class="animal-option" data-animal="dog">Собаки</div>
+        <div class="animal-option" data-animal="fox">Лисы</div>
+    </div>
+
+    <div id="step3" class="step">
+        <h1 id="animal-title"></h1>
+        <img id="animal-image" crossorigin="anonymous" referrerpolicy="no-referrer">
+        <p id="animal-fact" class="loading">Загрузка факта...</p>
+        <p id="animal-fact-ru" class="loading">Загрузка перевода...</p>
+        <div class="buttons-container">
+            <button id="new-fact-btn">Новый факт</button>
+            <button id="new-image-btn">Новое изображение</button>
+        </div>
+        <button id="back-step3">Назад к выбору</button>
+    </div>
+
+    <script>
+    
+        const usernameElement = document.getElementById('username');
+        const changeNameBtn = document.getElementById('change-name');
+        const nextStep1Btn = document.getElementById('next-step1');
+        const step1 = document.getElementById('step1');
+        const step2 = document.getElementById('step2');
+        const step3 = document.getElementById('step3');
+        const animalOptions = document.querySelectorAll('.animal-option');
+        const animalTitle = document.getElementById('animal-title');
+        const animalImage = document.getElementById('animal-image');
+        const animalFact = document.getElementById('animal-fact');
+        const animalFactRu = document.getElementById('animal-fact-ru');
+        const newImageBtn = document.getElementById('new-image-btn');
+        const newFactBtn = document.getElementById('new-fact-btn');
+        const backStep3Btn = document.getElementById('back-step3');
+
+
+        let currentAnimal = null;
+
+      
+        async function fetchRandomName() {
+            try {
+                const response = await fetch('https://randomuser.me/api/');
+                const data = await response.json();
+                return data.results[0].name.first;
+            } catch (error) {
+                console.error('Ошибка при получении имени:', error);
+                const names = ['Алексей', 'Мария', 'Иван', 'Ольга', 'Дмитрий', 'Елена'];
+                return names[Math.floor(Math.random() * names.length)];
+            }
+        }
+
+
+        async function fetchRandomFact(animal) {
+            try {
+                let apiUrl;
+                switch(animal) {
+                    case 'cat':
+                        apiUrl = 'https://catfact.ninja/fact';
+                        break;
+                    case 'dog':
+                        apiUrl = 'https://dog-api.kinduff.com/api/facts';
+                        break;
+                    case 'fox':
+                        apiUrl = 'https://some-random-api.ml/facts/fox';
+                        break;
+                    default:
+                        return 'Интересный факт не найден';
+                }
+
+                const response = await fetch(apiUrl);
+                const data = await response.json();
+                
+                if (animal === 'dog') return data.facts[0];
+                if (animal === 'fox') return data.fact;
+                return data.fact;
+            } catch (error) {
+                console.error('Ошибка при получении факта:', error);
+                const fallbackFacts = {
+                    cat: 'Кошки спят около 15 часов в день.',
+                    dog: 'Собаки понимают около 250 слов и жестов.',
+                    fox: 'Лисы используют магнитное поле Земли для охоты.'
+                };
+                return fallbackFacts[animal] || 'Интересный факт недоступен';
+            }
+        }
+
+
+        async function fetchRandomImage(animal) {
+            try {
+                let apiUrl;
+                switch(animal) {
+                    case 'cat':
+                        apiUrl = 'https://api.thecatapi.com/v1/images/search';
+                        break;
+                    case 'dog':
+                        apiUrl = 'https://dog.ceo/api/breeds/image/random';
+                        break;
+                    case 'fox':
+                        apiUrl = 'https://randomfox.ca/floof/';
+                        break;
+                    default:
+                        return '';
+                }
+
+                const response = await fetch(apiUrl);
+                const data = await response.json();
+                
+                if (animal === 'cat') return data[0].url;
+                if (animal === 'dog') return data.message;
+                return data.image;
+            } catch (error) {
+                console.error('Ошибка при получении изображения:', error);
+                const fallbackImages = {
+                    cat: 'https://cdn2.thecatapi.com/images/0XYvRd7oD.jpg',
+                    dog: 'https://images.dog.ceo/breeds/retriever-golden/n02099601_100.jpg',
+                    fox: 'https://randomfox.ca/images/1.jpg'
+                };
+                return fallbackImages[animal] || '';
+            }
+        }
+
+
+        async function translateToRussian(text) {
+            try {
+        
+                const apiKey = 'trnsl.1.1.20230701T000000Z.0123456789abcdef.0123456789abcdef';
+                const url = `https://translate.yandex.net/api/v1.5/tr.json/translate?key=${apiKey}&text=${encodeURIComponent(text)}&lang=en-ru`;
+                
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                if (data.code === 200 && data.text && data.text[0]) {
+                    return data.text[0];
+                }
+                return text + ' (перевод недоступен)';
+            } catch (error) {
+                console.error('Ошибка при переводе:', error);
+                return text;
+            }
+        }
+
+      
+        async function loadAnimalData() {
+            if (!currentAnimal) return;
+            
+            
+            animalFact.textContent = 'Загрузка факта...';
+            animalFactRu.textContent = 'Загрузка перевода...';
+            
+          
+            const imageUrl = await fetchRandomImage(currentAnimal);
+            animalImage.src = imageUrl;
+            
+       
+            const fact = await fetchRandomFact(currentAnimal);
+            animalFact.textContent = fact;
+            
+          
+            const translatedFact = await translateToRussian(fact);
+            animalFactRu.textContent = translatedFact;
+        }
+
+   
+        async function loadNewFact() {
+            if (!currentAnimal) return;
+            
+            animalFact.textContent = 'Загрузка нового факта...';
+            animalFactRu.textContent = 'Загрузка перевода...';
+            
+            const fact = await fetchRandomFact(currentAnimal);
+            animalFact.textContent = fact;
+            
+            const translatedFact = await translateToRussian(fact);
+            animalFactRu.textContent = translatedFact;
+        }
+
+   
+        async function loadNewImage() {
+            if (!currentAnimal) return;
+            
+            const imageUrl = await fetchRandomImage(currentAnimal);
+            animalImage.src = imageUrl;
+        }
+
+
+        async function initPage() {
+            const name = await fetchRandomName();
+            usernameElement.textContent = name;
+        }
+
+
+        changeNameBtn.addEventListener('click', async function() {
+            changeNameBtn.disabled = true;
+            changeNameBtn.textContent = 'Загрузка...';
+            
+            const name = await fetchRandomName();
+            usernameElement.textContent = name;
+            
+            changeNameBtn.disabled = false;
+            changeNameBtn.textContent = 'Мне не нравится это имя';
+        });
+
+        nextStep1Btn.addEventListener('click', function() {
+            step1.classList.remove('active');
+            step2.classList.add('active');
+        });
+
+        animalOptions.forEach(option => {
+            option.addEventListener('click', async function() {
+                currentAnimal = this.getAttribute('data-animal');
+                
+                const animalNames = {
+                    'cat': 'Коты',
+                    'dog': 'Собаки',
+                    'fox': 'Лисы'
+                };
+                animalTitle.textContent = animalNames[currentAnimal];
+                
+                step2.classList.remove('active');
+                step3.classList.add('active');
+                
+                await loadAnimalData();
+            });
+        });
+
+        newFactBtn.addEventListener('click', async function() {
+            await loadNewFact();
+        });
+
+        newImageBtn.addEventListener('click', async function() {
+            await loadNewImage();
+        });
+
+        backStep3Btn.addEventListener('click', function() {
+            step3.classList.remove('active');
+            step2.classList.add('active');
+        });
+
+        initPage();
+    </script>
+</body>
+</html>
