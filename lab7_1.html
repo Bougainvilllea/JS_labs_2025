@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Скрыть элемент</title>
+    <style>
+        #text {
+            padding: 20px;
+            background-color: #f0f0f0;
+            margin: 10px 0;
+        }
+        button {
+            padding: 10px 15px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <button onclick="hideText()">Пока!</button>
+    <div id="text">Пока-Пока!</div>
+
+    <script>
+        function hideText() {
+            const textElement = document.getElementById('text');
+            textElement.style.display = 'none';
+        }
+    </script>
+</body>
+</html>

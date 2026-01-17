@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Изменение горизонтальной линии</title>
+</head>
+<body>
+    <h2>Горизонтальные линии</h2>
+    <p>Выберите значения параметров, которые требуется изменять, и нажмите кнопку <strong>Выполнить</strong>.</p>
+    
+    <h3>Выравнивание</h3>
+    <input type="radio" id="align-left" name="alignment" value="left" checked>
+    <label for="align-left">LEFT</label><br>
+    <input type="radio" id="align-center" name="alignment" value="center">
+    <label for="align-center">CENTER</label><br>
+    <input type="radio" id="align-right" name="alignment" value="right">
+    <label for="align-right">RIGHT</label><br>
+    
+    <label for="width">Ширина линии (px):</label>
+    <input type="number" id="width" min="1" max="1000" value="300"><br>
+    
+    <label for="thickness">Толщина линии (px):</label>
+    <input type="number" id="thickness" min="1" max="50" value="2"><br>
+    
+    <label for="color">Цвет линии:</label>
+    <select id="color">
+        <option value="forestgreen">Forest Green</option>
+        <option value="olive">Olive</option>
+        <option value="navy">Navy</option>
+        <option value="blanchedalmond">Blanched Almond</option>
+        <option value="yellow">Yellow</option>
+        <option value="blue">Blue</option>
+        <option value="bisque">Bisque</option>
+        <option value="white">White</option>
+    </select><br>
+    
+    <button id="apply-btn">Выполнить</button>
+    
+    <hr id="demo-line">
+    
+    <script>
+        document.getElementById('apply-btn').addEventListener('click', function() {
+            const line = document.getElementById('demo-line');
+            
+            const alignment = document.querySelector('input[name="alignment"]:checked').value;
+            line.style.marginLeft = alignment === 'left' ? '0' : 'auto';
+            line.style.marginRight = alignment === 'right' ? '0' : 'auto';
+
+            const width = document.getElementById('width').value;
+            line.style.width = width + 'px';
+
+            const thickness = document.getElementById('thickness').value;
+            line.style.height = thickness + 'px';
+            line.style.borderWidth = thickness + 'px';
+
+            const color = document.getElementById('color').value;
+            line.style.borderColor = color;
+            line.style.backgroundColor = color;
+        });
+    </script>
+</body>
+</html>

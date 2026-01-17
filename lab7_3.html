@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Координаты мыши</title>
+    
+</head>
+<body>
+    <h1>Кликните в любом месте</h1>
+    <div id="coords">Координаты: (0, 0)</div>
+
+    <script>
+        document.addEventListener('click', function(e) {
+            const coords = document.getElementById('coords');
+            coords.textContent = `Координаты: (${e.clientX}, ${e.clientY})`;
+        });
+    </script>
+</body>
+</html>
